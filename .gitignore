@@ -1,0 +1,11 @@
+# Secrets -- never commit
+.env
+
+# Python / tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+artifacts/
+*.log

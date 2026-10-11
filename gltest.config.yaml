@@ -1,0 +1,25 @@
+# gltest configuration.
+#
+# The default run is direct mode only (tests/direct): in-process, no network, no
+# model, deterministic and fast. It needs none of the network config below.
+#
+# For the eventual live run on studionet, a PERSISTENT, controllable deployer
+# account is pinned via an environment variable so the same address is used
+# across separate Python processes (unlike the default, which generates fresh
+# random keys each run). Set ACCOUNT_PRIVATE_KEY_1 in a gitignored .env:
+#
+#   ACCOUNT_PRIVATE_KEY_1=0x<64 hex chars>
+#
+# The private key lives ONLY in .env (which is gitignored) and is never printed.
+networks:
+  default: studionet
+  studionet:
+    accounts: ["${ACCOUNT_PRIVATE_KEY_1}"]
+    from: "${ACCOUNT_PRIVATE_KEY_1}"
+  localnet:
+    url: "http://127.0.0.1:4000/api"
+    leader_only: false
+
+paths:
+  contracts: "contracts"
+  artifacts: "artifacts"
