@@ -19,6 +19,10 @@ is verified versus assumed. No production-readiness or model-accuracy claim.
   no double claim.
 - Verdict is recomputed on-chain from the agreed boolean; model wording never
   releases funds directly.
+- The model's `satisfied` field must be an **actual JSON boolean**; it is
+  type-checked (`isinstance(value, bool)`), never coerced with `bool(...)`. A
+  string `"false"`, a number `0`/`1`, an object, an array, or `null` is routed
+  through the malformed-output path (fail closed) and never yields KEPT.
 - Empty/whitespace evidence is BROKEN without ever calling the model.
 - `RESOLVED` and `RECOVERED` are terminal and mutually exclusive; neither can
   override the other.

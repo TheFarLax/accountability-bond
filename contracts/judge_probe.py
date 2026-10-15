@@ -107,7 +107,18 @@ class JudgeProbe(gl.Contract):
             raw = gl.nondet.exec_prompt(prompt, response_format="json")
             data = raw if isinstance(raw, dict) else json.loads(str(raw))
             require("satisfied" in data, ERROR_LLM + " model omitted 'satisfied'")
-            kept = bool(data.get("satisfied"))
+            value = data.get("satisfied")
+            # Must be an ACTUAL JSON boolean. No bool() coercion: that would turn
+            # the string "false", the number 1, a non-empty list, etc. into True
+            # and could release funds on malformed output. Anything that is not a
+            # real bool is routed through the [LLM_ERROR] malformed path (fail
+            # closed), never treated as a verdict. (isinstance(x, bool) is False
+            # for ints, so 0/1 are correctly rejected.)
+            require(
+                isinstance(value, bool),
+                ERROR_LLM + " 'satisfied' must be a JSON boolean",
+            )
+            kept = value
             why = str(data.get("reason", ""))[:_MAX_STR]
             return _canon({"kept": kept, "reason": why})
 

@@ -23,6 +23,13 @@ removes it.
      fenced prompt (`_JUDGE_TASK` + promise + criterion + inert-fenced evidence)
      and calls `gl.nondet.exec_prompt(..., response_format="json")`; returns a
      canonical `{"kept": bool, "reason": str}`.
+   - **`satisfied` is type-checked, not coerced.** The model's `satisfied` field
+     must be an **actual JSON boolean** (`isinstance(value, bool)`). It is never
+     passed through `bool(...)`, which would turn the string `"false"`, the
+     number `1`, a non-empty list, etc. into `True` and could release funds on
+     malformed output. Any non-boolean value (including `0`/`1`, since
+     `isinstance(x, bool)` is `False` for ints) is routed through the existing
+     `[LLM_ERROR]` malformed path -> fail closed, never a KEPT payout.
    - **validator** `validate(leaders_res)`: re-runs `judge()` and agrees **only**
      when its boolean `kept` equals the leader's. Reason strings are excluded
      from the equivalence check (independent judges word them differently). A

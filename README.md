@@ -88,7 +88,7 @@ lives only in `.env`.
 
 ```bash
 # Direct mode: in-process, no network, no model, deterministic, fast.
-pytest tests/direct                                   # 87 tests
+pytest tests/direct                                   # 107 tests
 
 # Integration (live Studionet; sends transactions, needs a funded deployer):
 gltest --network studionet tests/integration/test_integration.py       # fund/resolve/withdraw

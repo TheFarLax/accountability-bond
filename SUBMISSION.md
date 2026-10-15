@@ -20,7 +20,7 @@ commitment device relies on.
   remainder to beneficiary) once deadline + an immutable grace (>= 7 days) has
   passed and the bond is still unresolved; mutually exclusive with a finalized
   verdict.
-- 87 direct-mode tests passing. Live on Studionet (chain `61999`): normal
+- 107 direct-mode tests passing. Live on Studionet (chain `61999`): normal
   fund/resolve-KEPT/withdraw lifecycle and the full recovery lifecycle both
   verified; model judgement spot-checked (irrelevant / claim-without-proof /
   ambiguous / error-page inputs all returned BROKEN).
