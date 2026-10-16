@@ -55,7 +55,20 @@ to induce disagreement, e.g. snapshotted/immutable evidence) is out of scope.
 
 ## Coverage
 
-### Verified live on Studionet (final contract `0x625be5...7485` + recovery instance `0x4f6D4C...bF03`)
+### Verified live on Studionet
+
+Current contract `0x84C0F1B95Dbff655486bbBFA830Ca97C57a0175f` (deployed 2026-10-16
+from commit `4bada3a`, tx
+`0x26a5baf2931ca69d72883e31d5a83acf711a97446efb416db70cea3433c28e20`):
+- Deploy, and read-back of `terms()` / `status_json()` matching the intended
+  immutable terms. The bond is `OPEN` and unfunded.
+
+No other live behaviour has been verified on the current contract yet.
+
+### Verified live on the previous build `0x625be5...7485` + recovery instance `0x4f6D4C...bF03`
+
+These results predate the parser fix and belong to the superseded deployment
+(see the note below). They are not evidence about the current contract.
 - Deploy, `fund()`, `resolve()` -> **KEPT** via real `web.render` + model under
   consensus, owner `withdraw()` + double-withdraw rejection, native GEN out.
 - Full recovery path: early `recover()` rejected, `recover()` -> RECOVERED with
@@ -71,6 +84,21 @@ to induce disagreement, e.g. snapshotted/immutable evidence) is out of scope.
   evidence; validator agree/reject and malformed-leader edges; grace-floor
   constructor rejection; the beneficiary's actual `withdraw()` (live run
   asserted its claimable balance by read, not an actual withdrawal).
+
+### Superseded build and the parser fix
+
+`0x625be5...7485` is the previous deployment. It read the model's `satisfied`
+field with `bool(data.get("satisfied"))`, so a value that was not a real boolean
+-- the string `"false"`, the number `1`, a non-empty object or array -- was
+treated as `True` and could have returned KEPT on malformed output. Commit
+`4bada3a` replaces that with a strict `isinstance(value, bool)` check that routes
+every non-boolean to the malformed-output path, so such answers cannot yield
+KEPT. 20 direct-mode regression tests cover both contracts.
+
+The current contract carries that fix; the live runs listed above were performed
+against the previous build before the fix, and the fix itself is verified in
+direct mode rather than live. On the current contract only the deploy and
+read-back are live-verified.
 
 ## Secrets
 

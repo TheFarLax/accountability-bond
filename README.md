@@ -7,9 +7,11 @@ success criterion was met, and -- only if the validator set *agrees* on that one
 verdict -- returns your stake. Otherwise it goes to a beneficiary you named up
 front. A trustless StickK/Beeminder: no human referee, no oracle.
 
-> Status: hackathon submission, deployed and verified on **GenLayer Studionet**.
-> This is **not** production-ready and makes **no guarantee of model accuracy**
-> (see [Limitations](#limitations)).
+> Status: hackathon submission. Current contract deployed on **GenLayer
+> Studionet**: `0x84C0F1B95Dbff655486bbBFA830Ca97C57a0175f` (deployed 2026-10-16
+> from commit `4bada3a`). It is **not yet funded**. This is **not**
+> production-ready and makes **no guarantee of model accuracy** (see
+> [Limitations](#limitations)).
 
 ## The problem
 
@@ -97,10 +99,13 @@ gltest --network studionet tests/integration/test_judge_probe_live.py  # model j
 ```
 
 **Live-tested vs. direct-mode only** -- see [SECURITY.md](SECURITY.md#coverage).
-In short: funding, KEPT resolution, owner withdrawal + double-withdraw
-rejection, native transfer out, and the full recovery path are **verified live**;
-the BROKEN payout, fail-closed edges, consensus agree/reject, grace-floor
-rejection, and the beneficiary's actual `withdraw()` are **direct-mode only**.
+The live results above come from the **earlier** Studionet deployment
+(`0x625be5...7485`, the build that preceded the judgement-parser fix noted under
+[Network details](#network-details)). In short, on that build: funding, KEPT
+resolution, owner withdrawal + double-withdraw rejection, native transfer out,
+and the full recovery path are **verified live**; the BROKEN payout, fail-closed
+edges, consensus agree/reject, grace-floor rejection, and the beneficiary's
+actual `withdraw()` are **direct-mode only**.
 
 ## Network details
 
@@ -109,10 +114,22 @@ rejection, and the beneficiary's actual `withdraw()` are **direct-mode only**.
 | Network | GenLayer **Studionet** |
 | Chain ID | `61999` (`0xf22f`) |
 | RPC | `https://studio.genlayer.com/api` |
-| Primary contract | `0x625be5C311e7Cafde91477412c2157E46C7F7485` |
-| Recovery test instance | `0x4f6D4C024760DD88aD6828B1D2E9461FbB44bF03` |
+| Current contract | `0x84C0F1B95Dbff655486bbBFA830Ca97C57a0175f` |
+| Deployment transaction | `0x26a5baf2931ca69d72883e31d5a83acf711a97446efb416db70cea3433c28e20` |
+| Previous contract (buggy; superseded) | `0x625be5C311e7Cafde91477412c2157E46C7F7485` |
+| Previous recovery test instance | `0x4f6D4C024760DD88aD6828B1D2E9461FbB44bF03` |
 
-Studionet state is resettable, so these addresses are evidence of the verified
+Two Studionet deployments exist. `0x625be5...7485` is the **previous** build. It
+coerced the model's `satisfied` field with `bool(...)`, so a malformed answer
+such as the string `"false"` could be read as `true`. It is superseded and
+should not be used. The **current** contract, `0x84C0...175f`, requires an actual
+JSON boolean and was deployed from commit `4bada3a`. Its deployment is the only
+thing verified live so far: it is `OPEN` with no stake. The live test runs
+recorded above (funding, KEPT resolution, withdrawal, recovery) used the previous
+build, and the recovery instance above was deployed only to exercise `recover()`
+in isolation.
+
+Studionet state is resettable, so these addresses are evidence of the recorded
 runs, not permanent guarantees.
 
 ## Recovery mechanism
