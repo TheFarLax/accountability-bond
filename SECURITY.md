@@ -58,12 +58,19 @@ to induce disagreement, e.g. snapshotted/immutable evidence) is out of scope.
 ### Verified live on Studionet
 
 Current contract `0x84C0F1B95Dbff655486bbBFA830Ca97C57a0175f` (deployed 2026-10-16
-from commit `4bada3a`, tx
+from commit `4bada3a`, deploy tx
 `0x26a5baf2931ca69d72883e31d5a83acf711a97446efb416db70cea3433c28e20`):
 - Deploy, and read-back of `terms()` / `status_json()` matching the intended
-  immutable terms. The bond is `OPEN` and unfunded.
+  immutable terms.
+- Funding: `fund()` called once by the owner with `0.5 GEN`
+  (`500000000000000000 wei`), tx
+  `0x4d33f68b9c2d308b06d7923cafeec0f5c55bc210b0fad0360230202cae01999f`. Now
+  `FUNDED`, holding that stake. The funding transaction is separate from the
+  deployment transaction above.
 
-No other live behaviour has been verified on the current contract yet.
+No other live behaviour has been verified on the current contract yet. Only the
+deploy, funding, and read-back are live-verified; in particular neither
+`resolve()`, `recover()`, nor `withdraw()` has been run on this contract.
 
 ### Verified live on the previous build `0x625be5...7485` + recovery instance `0x4f6D4C...bF03`
 
@@ -97,8 +104,17 @@ KEPT. 20 direct-mode regression tests cover both contracts.
 
 The current contract carries that fix; the live runs listed above were performed
 against the previous build before the fix, and the fix itself is verified in
-direct mode rather than live. On the current contract only the deploy and
-read-back are live-verified.
+direct mode rather than live. On the current contract only the deploy, funding,
+and read-back are live-verified.
+
+The funded bond's terms are the ones live on chain: deadline
+`2026-11-30T00:00:00Z` is the point from which `resolve()` may be called by
+anyone -- before it, only `fund()` was allowed, and `fund()` was a one-time
+call, so no further stake can be added. `resolve()` credits the owner on KEPT
+and the beneficiary on BROKEN; `recover()` is unavailable until
+`2026-12-07T00:00:00Z` (deadline + 604800s grace) and then only while still
+`FUNDED`; whatever is credited leaves only through that party's `withdraw()`.
+No `v1.0.0` release has been confirmed published yet.
 
 ## Secrets
 

@@ -9,8 +9,9 @@ front. A trustless StickK/Beeminder: no human referee, no oracle.
 
 > Status: hackathon submission. Current contract deployed on **GenLayer
 > Studionet**: `0x84C0F1B95Dbff655486bbBFA830Ca97C57a0175f` (deployed 2026-10-16
-> from commit `4bada3a`). It is **not yet funded**. This is **not**
-> production-ready and makes **no guarantee of model accuracy** (see
+> from commit `4bada3a`; funded 2026-10-16 with `0.5 GEN`, now `FUNDED`). It
+> awaits resolution at or after the `2026-11-30T00:00:00Z` deadline. This is
+> **not** production-ready and makes **no guarantee of model accuracy** (see
 > [Limitations](#limitations)).
 
 ## The problem
@@ -116,6 +117,8 @@ actual `withdraw()` are **direct-mode only**.
 | RPC | `https://studio.genlayer.com/api` |
 | Current contract | `0x84C0F1B95Dbff655486bbBFA830Ca97C57a0175f` |
 | Deployment transaction | `0x26a5baf2931ca69d72883e31d5a83acf711a97446efb416db70cea3433c28e20` |
+| Funding transaction | `0x4d33f68b9c2d308b06d7923cafeec0f5c55bc210b0fad0360230202cae01999f` (`0.5 GEN` = `500000000000000000 wei`) |
+| Contract state | `FUNDED`, holding `500000000000000000 wei` |
 | Previous contract (buggy; superseded) | `0x625be5C311e7Cafde91477412c2157E46C7F7485` |
 | Previous recovery test instance | `0x4f6D4C024760DD88aD6828B1D2E9461FbB44bF03` |
 
@@ -123,11 +126,13 @@ Two Studionet deployments exist. `0x625be5...7485` is the **previous** build. It
 coerced the model's `satisfied` field with `bool(...)`, so a malformed answer
 such as the string `"false"` could be read as `true`. It is superseded and
 should not be used. The **current** contract, `0x84C0...175f`, requires an actual
-JSON boolean and was deployed from commit `4bada3a`. Its deployment is the only
-thing verified live so far: it is `OPEN` with no stake. The live test runs
-recorded above (funding, KEPT resolution, withdrawal, recovery) used the previous
-build, and the recovery instance above was deployed only to exercise `recover()`
-in isolation.
+JSON boolean and was deployed from commit `4bada3a`. Its deployment, funding,
+and read-back are the only things verified live so far: it is `FUNDED` with
+`0.5 GEN` (`500000000000000000 wei`) held. The funding transaction
+(`0x4d33f68b...1999f`) is separate from the deployment transaction
+(`0x26a5baf...28e20`) above. The live test runs recorded above (funding, KEPT
+resolution, withdrawal, recovery) used the previous build, and the recovery
+instance above was deployed only to exercise `recover()` in isolation.
 
 Studionet state is resettable, so these addresses are evidence of the recorded
 runs, not permanent guarantees.
